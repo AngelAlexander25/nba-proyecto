@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NBA Dashboard - Análisis Completo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img src="https://cdn.nba.com/logos/leagues/logo-nba.svg" alt="NBA Logo">
+      </div>
+      <nav>
+        <ul>
+          <li id="nav-dashboard"><a onclick="showSection('dashboard')">Dashboard</a></li>
+          <li id="nav-players" class="active"><a onclick="showSection('players')">Jugadores</a></li>
+          <li id="nav-teams"><a onclick="showSection('teams')">Equipos</a></li>
+          <li id="nav-standings"><a onclick="showSection('standings')">Clasificación</a></li>
+          <li id="nav-analytics"><a onclick="showSection('analytics')">Análisis</a></li>
+        </ul>
+      </nav>
+      <div class="search">
+        <i class="fas fa-search"></i>
+      </div>
+    </header>
+
+    <!-- Controls Panel -->
+    <div class="controls-panel" id="controlsPanel">
+      <!-- ...igual que antes... -->
+      <!-- (No es necesario cambiar nada aquí) -->
+      <div class="control-group">
+        <label>Temporada:</label>
+        <select id="seasonSelect">
+          <option value="2024">2024-25</option>
+          <option value="2023" selected>2023-24</option>
+          <option value="2022">2022-23</option>
+          <option value="2021">2021-22</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Tipo de Temporada:</label>
+        <select id="seasonTypeSelect">
+          <option value="regular">Temporada Regular</option>
+          <option value="playoffs">Playoffs</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Conferencia:</label>
+        <select id="conferenceSelect">
+          <option value="all">Todas</option>
+          <option value="east">Este</option>
+          <option value="west">Oeste</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <button class="refresh-btn" onclick="refreshData()">
+          <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>Datos en vivo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secciones del dashboard -->
+    <div id="dashboardSection" style="display:none;">
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">Bienvenido al Dashboard NBA</h2>
+        </div>
+        <p style="color:#ccc;">Selecciona una sección del menú para comenzar.</p>
+      </div>
+    </div>
+
+    <div id="playersSection">
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">Top Jugadores</h2>
+          <i class="fas fa-star section-icon"></i>
+        </div>
+        <div class="player-cards" id="topPlayers">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando jugadores...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="teamsSection" style="display:none;">
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">Clasificación de Equipos</h2>
+          <i class="fas fa-trophy section-icon"></i>
+        </div>
+        <div id="teamRankings">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando clasificación...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="standingsSection" style="display:none;">
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">Estadísticas de Temporada</h2>
+          <i class="fas fa-chart-line section-icon"></i>
+        </div>
+        <div class="chart-container" id="seasonChart">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando estadísticas...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="analyticsSection" style="display:none;">
+      <div class="dashboard-section full-width-section">
+        <div class="section-header">
+          <h2 class="section-title">Comparación de Jugadores</h2>
+          <i class="fas fa-chart-bar section-icon"></i>
+        </div>
+        <div class="chart-container" id="playerComparison">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando comparación...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="search-modal">
+      <div class="search-modal-content">
+        <div class="search-modal-header">
+          <h3>Buscar en NBA Dashboard</h3>
+          <span class="close-modal" onclick="closeSearchModal()">&times;</span>
+        </div>
+        <div class="search-modal-body">
+          <input type="text" id="searchInput" placeholder="Buscar jugadores, equipos..." />
+          <div id="searchResults"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-#Instala next.js 
+#Instala npm
  
  npm install  
   

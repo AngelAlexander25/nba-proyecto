@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Crown, Check, X, CreditCard, Shield, Zap, TrendingUp, BarChart3, Target, Star } from "lucide-react"
+import { Crown, Check, X, CreditCard, Shield, Zap, TrendingUp, BarChart3, Target, Star, Users, Database, MessageCircle, Phone } from "lucide-react"
 
 interface SubscriptionModalProps {
   isOpen: boolean
@@ -20,17 +20,17 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
   const plans = [
     {
       id: "free",
-      name: "Free",
+      name: "Gratuito",
       price: 0,
-      period: "Siempre gratis",
-      description: "Perfecto para comenzar",
+      period: "por mes",
+      description: "Perfecto para apostadores ocasionales y nuevos usuarios",
       features: [
-        "Estadísticas básicas de jugadores",
-        "Información de equipos",
-        "Hasta 10 búsquedas por día",
-        "Datos de temporada actual",
+        "3 predicciones diarias",
+        "Estadísticas básicas de los últimos 30 días",
+        "Acceso a 1 dashboard predefinido",
+        "Exploración de la plataforma sin compromiso"
       ],
-      limitations: ["Sin predicciones IA", "Sin análisis avanzados", "Sin gráficas premium", "Soporte limitado"],
+      limitations: ["Predicciones limitadas", "Datos históricos limitados", "Sin dashboards personalizables", "Sin soporte prioritario"],
       color: "gray",
       icon: Shield,
     },
@@ -39,16 +39,14 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
       name: "Pro",
       price: 29,
       period: "por mes",
-      description: "Para analistas serios",
+      description: "Nuestro plan más popular para apostadores serios y analistas amateur",
       features: [
-        "Todas las funciones Free",
-        "Predicciones IA avanzadas",
-        "Análisis multidimensional",
-        "Gráficas interactivas premium",
-        "Datos históricos completos",
-        "Alertas personalizadas",
-        "Exportación de datos",
-        "Soporte prioritario 24/7",
+        "Predicciones ilimitadas",
+        "Niveles de confianza detallados",
+        "Acceso completo a base de datos de 15+ años",
+        "5 dashboards personalizables",
+        "Alertas en tiempo real",
+        "Email support 24/7"
       ],
       limitations: [],
       color: "orange",
@@ -56,24 +54,40 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
       popular: true,
     },
     {
-      id: "enterprise",
-      name: "Enterprise",
-      price: 99,
+      id: "elite",
+      name: "Elite",
+      price: 79,
       period: "por mes",
-      description: "Para equipos profesionales",
+      description: "Diseñado para apostadores profesionales y sindicatos",
       features: [
-        "Todas las funciones Pro",
-        "API personalizada",
-        "Integración con sistemas externos",
-        "Análisis de equipos completos",
-        "Reportes automatizados",
-        "Consultoría especializada",
-        "SLA garantizado",
-        "Gerente de cuenta dedicado",
+        "Todo del Plan Pro incluido",
+        "Acceso a API y raw data",
+        "Predicciones específicas de props de jugadores",
+        "Análisis de oportunidades de arbitraje",
+        "Live chat support",
+        "Calls mensuales con analistas"
       ],
       limitations: [],
       color: "purple",
       icon: Star,
+    },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      price: "Personalizado",
+      period: "",
+      description: "Para medios deportivos, casas de apuestas y consultores profesionales",
+      features: [
+        "Licencias múltiples",
+        "Data feeds customizados",
+        "Integración con sistemas existentes",
+        "Support dedicado",
+        "Soluciones empresariales",
+        "Consultoría especializada"
+      ],
+      limitations: [],
+      color: "blue",
+      icon: Users,
     },
   ]
 
@@ -96,11 +110,11 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
             Upgrade a NBA ProStats Premium
           </DialogTitle>
           <DialogDescription className="text-gray-300">
-            Desbloquea el poder completo de la inteligencia artificial para análisis deportivo
+            Desbloquea el poder completo de la inteligencia artificial para análisis deportivo y apuestas profesionales
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 md:grid-cols-3 mt-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-6">
           {plans.map((plan) => {
             const Icon = plan.icon
             const isSelected = selectedPlan === plan.id
@@ -128,9 +142,11 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
                     <Icon className={`h-6 w-6 text-${plan.color}-400`} />
                   </div>
                   <CardTitle className="text-white text-xl">{plan.name}</CardTitle>
-                  <CardDescription className="text-gray-300">{plan.description}</CardDescription>
+                  <CardDescription className="text-gray-300 text-sm">{plan.description}</CardDescription>
                   <div className="text-center">
-                    <span className="text-3xl font-bold text-white">${plan.price}</span>
+                    <span className="text-3xl font-bold text-white">
+                      {typeof plan.price === 'number' ? `$${plan.price}` : plan.price}
+                    </span>
                     <span className="text-gray-400 ml-1">{plan.period}</span>
                   </div>
                 </CardHeader>
@@ -138,14 +154,14 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     {plan.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-green-400 flex-shrink-0" />
+                      <div key={index} className="flex items-start gap-2">
+                        <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-gray-300">{feature}</span>
                       </div>
                     ))}
                     {plan.limitations.map((limitation, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <X className="h-4 w-4 text-red-400 flex-shrink-0" />
+                      <div key={index} className="flex items-start gap-2">
+                        <X className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-gray-400">{limitation}</span>
                       </div>
                     ))}
@@ -181,28 +197,28 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
               <TrendingUp className="h-8 w-8 text-purple-400" />
               <div>
                 <div className="font-medium text-white">Predicciones IA</div>
-                <div className="text-sm text-gray-400">Algoritmos ML avanzados</div>
+                <div className="text-sm text-gray-400">Con niveles de confianza</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <BarChart3 className="h-8 w-8 text-blue-400" />
+              <Database className="h-8 w-8 text-blue-400" />
               <div>
-                <div className="font-medium text-white">Analytics Pro</div>
-                <div className="text-sm text-gray-400">Métricas profesionales</div>
+                <div className="font-medium text-white">Datos Históricos</div>
+                <div className="text-sm text-gray-400">15+ años de información</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Target className="h-8 w-8 text-green-400" />
               <div>
-                <div className="font-medium text-white">Betting Insights</div>
-                <div className="text-sm text-gray-400">Análisis de apuestas</div>
+                <div className="font-medium text-white">Props & Arbitraje</div>
+                <div className="text-sm text-gray-400">Análisis avanzado</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Shield className="h-8 w-8 text-orange-400" />
+              <MessageCircle className="h-8 w-8 text-orange-400" />
               <div>
-                <div className="font-medium text-white">Datos Premium</div>
-                <div className="text-sm text-gray-400">Acceso completo</div>
+                <div className="font-medium text-white">Soporte 24/7</div>
+                <div className="text-sm text-gray-400">Email y live chat</div>
               </div>
             </div>
           </div>
@@ -231,8 +247,8 @@ export function SubscriptionModal({ isOpen, onClose, onSubscribe }: Subscription
               ) : (
                 <>
                   <CreditCard className="w-4 h-4 mr-2" />
-                  Suscribirse a {plans.find((p) => p.id === selectedPlan)?.name} - $
-                  {plans.find((p) => p.id === selectedPlan)?.price}/mes
+                  {selectedPlan === "enterprise" ? "Contactar Ventas" : 
+                   `Suscribirse a ${plans.find((p) => p.id === selectedPlan)?.name} - $${plans.find((p) => p.id === selectedPlan)?.price}/mes`}
                 </>
               )}
             </Button>

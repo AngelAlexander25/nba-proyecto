@@ -7,13 +7,34 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Search, TrendingUp, Crown, BarChart3, Target, Users, Trophy, ArrowLeft } from "lucide-react"
+import { PlayerStatsCard } from "@/components/player-stats-card"
+import { PopularPlayers } from "@/components/popular-players"
+import { PredictionCharts } from "@/components/prediction-charts"
+import { SubscriptionModal } from "@/components/subscription-modal"
+import { DashboardStats } from "@/components/dashboard-stats"
+import { usePlayers, useTeams } from "@/hooks/usa-nba-data"
+import type { Player } from "@/types/nba"
 
 export default function AppPage() {
-  const [selectedPlayer, setSelectedPlayer] = useState(null)
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   const [isPremium, setIsPremium] = useState(false)
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
   const router = useRouter()
+
+  const {
+    players,
+    loading: playersLoading,
+    error: playersError,
+    refetch: refetchPlayers,
+  } = usePlayers({ per_page: 25 })
+
+  const { teams, loading: teamsLoading } = useTeams()
+
+  // Función para manejar retry
+  const handleRetry = () => {
+    refetchPlayers({ per_page: 25, reset: true })
+  }
 
   // Función para volver al landing
   const goBackToLanding = () => {
@@ -116,56 +137,56 @@ export default function AppPage() {
 
           {/* Dashboard Overview */}
           <TabsContent value="overview" className="space-y-6">
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-              <CardContent className="flex items-center justify-center py-20">
-                <div className="text-center">
-                  <BarChart3 className="w-16 h-16 text-orange-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Dashboard de Estadísticas NBA</h3>
-                  <p className="text-gray-400 mb-6">Bienvenido a tu centro de control de estadísticas NBA con IA</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-orange-500">30+</div>
-                      <div className="text-sm text-gray-400">Equipos NBA</div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-orange-500">500+</div>
-                      <div className="text-sm text-gray-400">Jugadores Activos</div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-orange-500">24/7</div>
-                      <div className="text-sm text-gray-400">Datos en Tiempo Real</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <DashboardStats
+              players={players}
+              teams={teams}
+              loading={playersLoading || teamsLoading}
+              isPremium={isPremium}
+              onUpgrade={() => setShowSubscriptionModal(true)}
+            />
           </TabsContent>
 
           {/* Jugadores */}
           <TabsContent value="players" className="space-y-6">
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-              <CardContent className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">Estadísticas de Jugadores NBA</h3>
-                  <p className="text-gray-400">Explora las estadísticas detalladas de tus jugadores favoritos</p>
-                </div>
-              </CardContent>
-            </Card>
+            {selectedPlayer ? (
+              <div className="space-y-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedPlayer(null)}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  ← Volver a la lista
+                </Button>
+                <PlayerStatsCard player={selectedPlayer} isPremium={isPremium} />
+              </div>
+            ) : (
+              <>
+                <PopularPlayers
+                  players={players}
+                  loading={playersLoading}
+                  error={playersError}
+                  onPlayerSelect={setSelectedPlayer}
+                  onRetry={handleRetry}
+                />
+                <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+                  <CardContent className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        Selecciona un jugador para ver estadísticas detalladas
+                      </h3>
+                      <p className="text-gray-400">Usa el buscador arriba o selecciona de los jugadores populares</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </TabsContent>
 
           {/* Predicciones IA */}
           <TabsContent value="predictions" className="space-y-6">
             {isPremium ? (
-              <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-                <CardContent className="flex items-center justify-center py-20">
-                  <div className="text-center">
-                    <TrendingUp className="w-16 h-16 text-green-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">Predicciones con IA Activadas</h3>
-                    <p className="text-gray-400 mb-6">Acceso completo a nuestros algoritmos de predicción avanzados</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <PredictionCharts selectedPlayer={selectedPlayer} players={players} onPlayerSelect={setSelectedPlayer} />
             ) : (
               <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
                 <CardContent className="flex items-center justify-center py-20">
@@ -189,43 +210,50 @@ export default function AppPage() {
 
           {/* Equipos */}
           <TabsContent value="teams" className="space-y-6">
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-              <CardContent className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">Estadísticas de Equipos NBA</h3>
-                  <p className="text-gray-400">Analiza el rendimiento de todos los equipos de la NBA</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {teams.slice(0, 9).map((team) => (
+                <Card
+                  key={team.id}
+                  className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors"
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                        <span className="text-white font-bold text-sm">{team.abbreviation}</span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-white">{team.full_name}</h3>
+                        <p className="text-sm text-gray-400">
+                          {team.conference} • {team.division}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            {teams.length > 9 && (
+              <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
+                <CardContent className="flex items-center justify-center py-8">
+                  <div className="text-center">
+                    <p className="text-gray-400 mb-4">Mostrando 9 de {teams.length} equipos</p>
+                    <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 bg-transparent">
+                      Ver todos los equipos
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
 
       {/* Modal de Suscripción Simulado */}
-      {showSubscriptionModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full mx-4">
-            <h3 className="text-2xl font-bold text-white mb-4">Upgrade a Premium</h3>
-            <p className="text-gray-400 mb-6">Desbloquea todas las funciones premium incluyendo predicciones con IA</p>
-            <div className="flex gap-4">
-              <Button
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 flex-1"
-                onClick={handleSubscribe}
-              >
-                Suscribirse
-              </Button>
-              <Button
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 bg-transparent"
-                onClick={() => setShowSubscriptionModal(false)}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        onSubscribe={handleSubscribe}
+      />
     </div>
   )
 }

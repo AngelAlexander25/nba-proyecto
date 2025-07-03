@@ -39,7 +39,7 @@ export default function LandingPage() {
             apuestas deportivas
           </p>
           <Button
-            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 text-lg rounded-full"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 px-8 py-4 text-lg rounded-full"
             onClick={navigateToApp}
           >
             Explorar Plataforma
@@ -416,7 +416,7 @@ export default function LandingPage() {
               deportivas!
             </p>
             <Button
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 text-lg rounded-full"
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 px-8 py-4 text-lg rounded-full"
               onClick={navigateToApp}
             >
               Comenzar Ahora
